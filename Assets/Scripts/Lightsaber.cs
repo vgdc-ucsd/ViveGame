@@ -17,9 +17,12 @@ public class Lightsaber : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        var explosion = Instantiate(explosionPrefab);
-        explosion.position = other.transform.position;
-        Destroy(other.gameObject);
-        Destroy(other.gameObject, 1);
+        if (other.GetComponent<Destructible>())
+        {
+            var explosion = Instantiate(explosionPrefab);
+            explosion.position = other.transform.position;
+            Destroy(other.gameObject);
+            Destroy(other.gameObject, 1);
+        }
     }
 }
