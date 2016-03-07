@@ -3,16 +3,34 @@ using System.Collections;
 
 public class Lightsaber : MonoBehaviour
 {
+    SteamVR_TrackedObject trackedObj;
+    public float forceRadius = 2.0f;
+    public float forceRange = 25.0f;
+    public float forceStrength = 5.0f;
 
-	// Use this for initialization
-	void Start () {
-	
-	}
+    // Use this for initialization
+    void Start ()
+    {
+        trackedObj = GetComponentInParent<SteamVR_TrackedObject>();
+    }
 	
 	// Update is called once per frame
-	void Update () {
-	
-	}
+	void Update ()
+    {
+        var device = SteamVR_Controller.Input((int)trackedObj.index);
+	    var sound = GetComponent<AudioSource>().pitch = 1.0f + device.velocity.magnitude / 10.0f;
+	    if (device.GetHairTriggerDown())
+	    {
+            RaycastHit[] hits = Physics.SphereCastAll(transform.position + transform.up * forceRadius, forceRadius, transform.up);
+	        foreach (var hit in hits)
+	        {
+	            var obj = hit.transform.GetComponent<Throwable>();
+	            if (obj == null) continue;
+	            var direction = (hit.transform.position - transform.position).normalized;
+                obj.Throw(direction * forceStrength);
+	        }
+        }
+    }
 
     void OnTriggerEnter(Collider other)
     {
@@ -21,5 +39,11 @@ public class Lightsaber : MonoBehaviour
         {
             dest.OnDamage(100);
         }
+    }
+
+    void OnTriggerStay(Collider other)
+    {
+        var device = SteamVR_Controller.Input((int)trackedObj.index);
+        device.TriggerHapticPulse(2000);
     }
 }

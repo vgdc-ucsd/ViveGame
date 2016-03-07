@@ -5,6 +5,7 @@ public class FlyAt : MonoBehaviour
 {
     public string targetTag;
     public float speed = 1;
+    private float currentSpeed;
 
     private Rigidbody rigidbody;
     private Transform target;
@@ -14,6 +15,7 @@ public class FlyAt : MonoBehaviour
 	{
 	    rigidbody = GetComponent<Rigidbody>();
 	    target = GameObject.FindGameObjectWithTag(targetTag).transform;
+	    currentSpeed = speed;
 	}
 	
 	// Update is called once per frame
