@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Valve.VR;
 
 public class Lightsaber : MonoBehaviour
 {
@@ -7,6 +8,9 @@ public class Lightsaber : MonoBehaviour
     public float forceRadius = 2.0f;
     public float forceRange = 25.0f;
     public float forceStrength = 5.0f;
+
+    private int powers = 2;
+    private int currentPower = 0;
 
     // Use this for initialization
     void Start ()
@@ -27,9 +31,26 @@ public class Lightsaber : MonoBehaviour
 	            var obj = hit.transform.GetComponent<Throwable>();
 	            if (obj == null) continue;
 	            var direction = (hit.transform.position - transform.position).normalized;
-                obj.Throw(direction * forceStrength);
+	            if (currentPower == 0)
+	            {
+	                obj.Throw(direction*forceStrength);
+	            }
+                else if (currentPower == 1)
+                {
+                    obj.Throw(direction * -forceStrength);
+                }
 	        }
         }
+	    if (device.GetPress(EVRButtonId.k_EButton_SteamVR_Touchpad))
+	    {
+	        var vec = device.GetAxis();
+	        if (vec != new Vector2(0.0f, 0.0f))
+	        {
+	            float angle = Mathf.Atan2(vec.y, vec.x) + Mathf.PI;
+                currentPower = (int) (angle / (2*Mathf.PI/powers));
+	            Debug.Log(currentPower);
+	        }
+	    }
     }
 
     void OnTriggerEnter(Collider other)
