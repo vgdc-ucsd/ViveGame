@@ -12,7 +12,7 @@ public class Decay : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-	
+        fullSize = this.transform.localScale;
 	}
 	
 	// Update is called once per frame
