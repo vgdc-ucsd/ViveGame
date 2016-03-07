@@ -8,12 +8,15 @@ public class ScorchSpawner : MonoBehaviour {
     public float sampleTime = 0.00f;
     public float placeEvery = 0.05f;
 
+
     private float currentDelay;
     private Collider lastCollider;
     private Vector3 lastHitPt;
     private Quaternion lastHitQ;
     private RaycastHit hitInfo;
     private Rigidbody rigidbody;
+    private bool collidedLastFrame = false;
+
 
     void Start()
     {
@@ -26,24 +29,32 @@ public class ScorchSpawner : MonoBehaviour {
         if (currentDelay > 0)
         {
             currentDelay -= Time.deltaTime;
+            collidedLastFrame = false;
         } else {
-            if (Physics.Raycast(transform.position, transform.up, out hitInfo, rayDist)) {
-                
+            if (Physics.Raycast(transform.position, transform.up, out hitInfo, rayDist))
+            {
+
                 Vector3 hitPt = hitInfo.point;
                 Quaternion hitQ = Quaternion.LookRotation(hitInfo.normal);
 
-                float distance = (hitPt - lastHitPt).magnitude;
-                if (lastCollider != hitInfo.collider)
+                float distance;
+                if (lastCollider != hitInfo.collider || !collidedLastFrame)
                 {
                     distance = 0;
                 }
+                else
+                {
+                    distance = (hitPt - lastHitPt).magnitude;
+                }
 
-                for (int points = 0; points < distance / placeEvery; ++points) {
-                    Vector3 pos = Vector3.Lerp(hitPt, lastHitPt, (points * placeEvery) / distance);
-                    Quaternion rotation = Quaternion.Lerp(hitQ, lastHitQ, (points * placeEvery) / distance);
+                for (int points = 0; points < distance/placeEvery; ++points)
+                {
+                    Vector3 pos = Vector3.Lerp(hitPt, lastHitPt, (points*placeEvery)/distance);
+                    Quaternion rotation = Quaternion.Lerp(hitQ, lastHitQ, (points*placeEvery)/distance);
                     Transform scorchMark = Instantiate(scorchPrefab, pos, rotation) as Transform;
                     scorchMark.parent = hitInfo.collider.transform;
-                    scorchMark.localScale = new Vector3(1/scorchMark.parent.localScale.x, 1/ scorchMark.parent.localScale.y, 1/ scorchMark.parent.localScale.z);
+                    scorchMark.localScale = new Vector3(1/scorchMark.parent.localScale.x,
+                        1/scorchMark.parent.localScale.y, 1/scorchMark.parent.localScale.z);
                     //scorchMark.Translate(0, 0f, 0f, Space.Self);
                 }
 
@@ -51,6 +62,11 @@ public class ScorchSpawner : MonoBehaviour {
                 lastHitPt = hitPt;
                 lastHitQ = hitQ;
                 lastCollider = hitInfo.collider;
+                collidedLastFrame = true;
+            }
+            else
+            {
+                collidedLastFrame = false;
             }
         }
     }

@@ -25,7 +25,7 @@ public class Lightsaber : MonoBehaviour
 	    var sound = GetComponent<AudioSource>().pitch = 1.0f + device.velocity.magnitude / 10.0f;
 	    if (device.GetHairTriggerDown())
 	    {
-            RaycastHit[] hits = Physics.SphereCastAll(transform.position + transform.up * forceRadius, forceRadius, transform.up);
+            RaycastHit[] hits = Physics.SphereCastAll(transform.position + transform.up * forceRadius, forceRadius, transform.forward);
 	        foreach (var hit in hits)
 	        {
 	            var obj = hit.transform.GetComponent<Throwable>();
